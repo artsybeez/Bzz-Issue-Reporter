@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bleta's Issue Reporter Website</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <div class="header-left">
+                    <div class="logo">📋</div>
+                    <h1>Bleta's Issue Reporter Website</h1>
+                </div>
+                <div class="header-buttons">
+                    <button class="btn-toggle" onclick="toggleForm()">
+                        <span id="toggleText">New Issue</span>
+                    </button>
+                    <button class="btn-dark-mode" onclick="toggleDarkMode()" title="Toggle dark mode">
+                        <span id="darkModeIcon">🌙</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main>
+        <div class="container">
+            <!-- Issue Submission Form -->
+            <div class="form-card hidden" id="formCard">
+                <h2>Submit an Issue</h2>
+                <form id="issueForm" onsubmit="handleSubmit(event)">
+                    <!-- Issue Title -->
+                    <div class="form-group">
+                        <label for="title">Issue Title</label>
+                        <input 
+                            type="text" 
+                            id="title" 
+                            placeholder="Brief description of the issue..."
+                            required
+                        >
+                    </div>
+
+                    <!-- Description -->
+                    <div class="form-group">
+                        <label for="description">Description</label>
+                        <textarea 
+                            id="description" 
+                            placeholder="Provide more details about the issue..."
+                            required
+                        ></textarea>
+                    </div>
+
+                    <!-- Category and File Upload Row -->
+                    <div class="form-row">
+                        <!-- Category -->
+                        <div class="form-group">
+                            <label for="category">Category</label>
+                            <select id="category">
+                                <option value="Bug">Bug</option>
+                                <option value="Feature Request">Feature Request</option>
+                                <option value="UI Issue">UI Issue</option>
+                                <option value="Other">Other</option>
+                            </select>
+                        </div>
+
+                        <!-- File Upload -->
+                        <div class="form-group">
+                            <label for="file">Attachment <span class="optional">(optional)</span></label>
+                            <div class="file-upload-wrapper">
+                                <input type="file" id="file" onchange="handleFileChange(event)">
+                                <label for="file" class="file-upload-label">
+                                    <span>📎</span>
+                                    <span id="fileLabel">Upload file</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Priority Selector -->
+                    <div class="form-group">
+                        <label>Priority</label>
+                        <div class="priority-selector">
+                            <button 
+                                type="button" 
+                                class="priority-btn low" 
+                                onclick="setPriority('low')"
+                            >
+                                Low
+                            </button>
+                            <button 
+                                type="button" 
+                                class="priority-btn medium active" 
+                                onclick="setPriority('medium')"
+                            >
+                                Medium
+                            </button>
+                            <button 
+                                type="button" 
+                                class="priority-btn high" 
+                                onclick="setPriority('high')"
+                            >
+                                High
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Submit Button -->
+                    <button type="submit" class="btn-submit">
+                        <span>✉️</span>
+                        <span>Submit Issue</span>
+                    </button>
+                </form>
+            </div>
+
+            <!-- Issues List -->
+            <div>
+                <div class="issues-header">
+                    <h2>All Issues</h2>
+                    <span class="issue-count" id="issueCount">0 issues</span>
+                </div>
+                <div class="issues-list" id="issuesList">
+                    <!-- Issues will be dynamically added here!! :D -->
+                </div>
+            </div>
+        </div>
+    </main>
+    <script src="script.js"></script>
+</body>
+</html>
