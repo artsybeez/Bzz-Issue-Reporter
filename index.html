@@ -1,3 +1,5 @@
+<!-- Welcome to my code! Feel free to explore through and maybe suggest any changes I should make.-->
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -18,7 +20,7 @@
                 </div>
                 <div class="header-buttons">
                     <button class="btn-toggle" onclick="toggleForm()">
-                        <span id="toggleText">New Issue</span>
+                        <span id="toggleText"> + New Issue</span>
                     </button>
                     <button class="btn-dark-mode" onclick="toggleDarkMode()" title="Toggle dark mode">
                         <span id="darkModeIcon">🌙</span>
@@ -31,6 +33,10 @@
     <!-- Main Content -->
     <main>
         <div class="container">
+            <div class="hero-section">
+                <p class="hero-text">Report any issue regarding code or even device problems!</p>
+            </div>
+
             <!-- Issue Submission Form -->
             <div class="form-card hidden" id="formCard">
                 <h2>Submit an Issue</h2>
@@ -124,6 +130,39 @@
                     <h2>All Issues</h2>
                     <span class="issue-count" id="issueCount">0 issues</span>
                 </div>
+
+                <!-- Filters -->
+                <div class="filters-section">
+                    <div class="filter-group">
+                        <label for="filterPriority">Priority:</label>
+                        <select id="filterPriority" onchange="applyFilters()">
+                            <option value="">All</option>
+                            <option value="low">Low</option>
+                            <option value="medium">Medium</option>
+                            <option value="high">High</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label for="filterCategory">Category:</label>
+                        <select id="filterCategory" onchange="applyFilters()">
+                            <option value="">All</option>
+                            <option value="Bug">Bug</option>
+                            <option value="Feature Request">Feature Request</option>
+                            <option value="UI Issue">UI Issue</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label for="filterStatus">Status:</label>
+                        <select id="filterStatus" onchange="applyFilters()">
+                            <option value="">All</option>
+                            <option value="open">Open</option>
+                            <option value="in-progress">In Progress</option>
+                            <option value="resolved">Resolved</option>
+                        </select>
+                    </div>
+                </div>
+
                 <div class="issues-list" id="issuesList">
                     <!-- Issues will be dynamically added here!! :D -->
                 </div>

@@ -127,12 +127,14 @@
             cursor: pointer;
             font-weight: 500;
             font-size: 14px;
-            transition: opacity 0.2s;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
         }
 
         .btn-toggle:hover {
-            opacity: 0.9;
+            opacity: 0.95;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+            transform: translateY(-1px);
         }
 
         .btn-dark-mode {
@@ -144,13 +146,19 @@
             cursor: pointer;
             font-weight: 500;
             font-size: 16px;
-            transition: opacity 0.2s;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
             display: flex;
             align-items: center;
             justify-content: center;
             width: 40px;
             height: 40px;
+        }
+
+        .btn-dark-mode:hover {
+            opacity: 0.95;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+            transform: translateY(-1px);
         }
 
         .btn-dark-mode:hover {
@@ -161,6 +169,23 @@
             padding: 32px 0;
         }
 
+        .hero-section {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 24px 0;
+        }
+
+        .hero-text {
+            font-size: 18px;
+            font-weight: 600;
+            background: linear-gradient(135deg, var(--color-blue-soft), var(--color-lavender));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            line-height: 1.6;
+            font-style: italic;
+        }
+
         .form-card {
             background-color: var(--card);
             border-radius: 24px;
@@ -168,11 +193,17 @@
             border: 1px solid var(--border);
             padding: 32px;
             margin-bottom: 40px;
-            transition: all 0.3s ease;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            max-height: 2000px;
+            opacity: 1;
         }
 
         .form-card.hidden {
             display: none;
+            max-height: 0;
+            opacity: 0;
+            margin-bottom: 0;
+            padding: 0 32px;
         }
 
         .form-card h2 {
@@ -338,6 +369,48 @@
             color: var(--muted-foreground);
         }
 
+        .filters-section {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 24px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .filter-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .filter-group label {
+            display: inline;
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--foreground);
+            margin: 0;
+        }
+
+        .filter-group select {
+            padding: 6px 10px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            background-color: var(--input-background);
+            color: var(--foreground);
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .filter-group select:hover {
+            border-color: var(--primary);
+        }
+
+        .filter-group select:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
         .issues-list {
             display: flex;
             flex-direction: column;
@@ -350,15 +423,16 @@
             padding: 20px;
             border: 1px solid var(--border);
             border-left: 4px solid;
-            transition: all 0.2s;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         .issue-card.expanded {
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
         }
 
         .issue-card:hover {
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+            transform: translateY(-2px);
         }
 
         .issue-main {
@@ -455,9 +529,15 @@
             gap: 6px;
         }
 
+        .issue-controls {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
         .status-dropdown {
             font-size: 12px;
-            padding: 4px 8px;
+            padding: 6px 10px;
             border-radius: 8px;
             border: 1px solid var(--border);
             background-color: var(--card);
@@ -475,11 +555,41 @@
             border-color: var(--primary);
         }
 
+        .btn-toggle-comments {
+            font-size: 12px;
+            padding: 6px 12px;
+            border-radius: 8px;
+            background-color: var(--primary);
+            color: var(--primary-foreground);
+            border: 1px solid var(--primary);
+            cursor: pointer;
+            transition: all 0.2s;
+            font-weight: 500;
+        }
+
+        .btn-toggle-comments:hover {
+            opacity: 0.9;
+        }
+
         /* Comments Section Styles */
         .comments-section {
             margin-top: 24px;
             padding-top: 20px;
             border-top: 1px solid var(--border);
+            animation: slideDown 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                max-height: 0;
+                overflow: hidden;
+            }
+            to {
+                opacity: 1;
+                max-height: 1000px;
+                overflow: visible;
+            }
         }
 
         .comments-header {
@@ -606,17 +716,97 @@
             font-weight: 500;
             font-size: 13px;
             cursor: pointer;
-            transition: all 0.2s;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             white-space: nowrap;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
         }
 
         .btn-comment:hover {
-            opacity: 0.9;
+            opacity: 0.95;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            transform: translateY(-1px);
+        }
+
+        .btn-reply {
+            display: inline-block;
+            padding: 6px 10px;
+            background-color: transparent;
+            color: var(--primary);
+            border: 1px solid var(--primary);
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            margin-top: 8px;
+        }
+
+        .btn-reply:hover {
+            background-color: var(--primary);
+            color: var(--primary-foreground);
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .replies-section {
+            margin-top: 12px;
+            padding-left: 16px;
+            border-left: 2px solid var(--muted);
+        }
+
+        .reply {
+            margin-bottom: 12px;
+            padding: 8px 12px;
+            background-color: rgba(107, 140, 174, 0.05);
+            border-radius: 8px;
+        }
+
+        .reply-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 4px;
+        }
+
+        .reply-time {
+            font-size: 12px;
+            color: var(--muted-foreground);
+        }
+
+        .reply-text {
+            font-size: 13px;
+            color: var(--card-foreground);
+            margin: 0;
+        }
+
+        .reply-form {
+            display: flex;
+            gap: 8px;
+            margin-top: 12px;
+            padding: 8px 0;
+        }
+
+        .reply-input {
+            flex: 1;
+            padding: 8px 12px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            background-color: var(--input-background);
+            color: var(--foreground);
+            font-size: 13px;
+            transition: all 0.2s;
+        }
+
+        .reply-input:focus {
+            outline: none;
+            border-color: var(--primary);
         }
 
         .comment-indicator {
             font-weight: 500;
             color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 6px;
         }
 
         .empty-state {

@@ -1,4 +1,4 @@
-// Logjika e aplikacionit për menaxhimin e raporteve të çështjeve
+// Logjika lol
         let issues = [
             {
                 id: '1',
@@ -36,9 +36,12 @@
         let currentPriority = 'medium';
         let currentFileName = '';
         let expandedIssueId = null;
+        let filterPriority = '';
+        let filterCategory = '';
+        let filterStatus = '';
 
         document.addEventListener('DOMContentLoaded', function() {
-            // Initialize dark mode from localStorage
+            // dark mode, yes my eyes hurt from the light mode ver
             const isDarkMode = localStorage.getItem('darkMode') === 'true';
             if (isDarkMode) {
                 document.body.classList.add('dark-mode');
@@ -132,6 +135,11 @@
             });
             
             renderIssues();
+            
+            // Hide the form after submission
+            const formCard = document.getElementById('formCard');
+            formCard.classList.add('hidden');
+            document.getElementById('toggleText').textContent = ' + New Issue';
         }
 
         function formatDate(date) {
@@ -149,9 +157,9 @@
 
         function getStatusLabel(status) {
             const labels = {
-                'open': 'Open',
-                'in-progress': 'In Progress',
-                'resolved': 'Resolved'
+                'open': '📋 Open',
+                'in-progress': '⏳ In Progress',
+                'resolved': '✓ Resolved'
             };
             return labels[status] || status;
         }
@@ -180,6 +188,7 @@
                 id: Date.now().toString(),
                 text: commentText,
                 createdAt: new Date(),
+                replies: [],
             });
             
             document.getElementById(`comment-input-${issueId}`).value = '';
@@ -194,11 +203,69 @@
             renderIssues();
         }
 
+        function addReply(issueId, commentId) {
+            const replyText = document.getElementById(`reply-input-${issueId}-${commentId}`).value.trim();
+            
+            if (!replyText) return;
+            
+            const issue = issues.find(i => i.id === issueId);
+            if (!issue) return;
+            
+            const comment = issue.comments.find(c => c.id === commentId);
+            if (!comment) return;
+            
+            if (!comment.replies) {
+                comment.replies = [];
+            }
+            
+            comment.replies.push({
+                id: Date.now().toString(),
+                text: replyText,
+                createdAt: new Date(),
+            });
+            
+            document.getElementById(`reply-input-${issueId}-${commentId}`).value = '';
+            renderIssues();
+        }
+
+        function deleteReply(issueId, commentId, replyId) {
+            const issue = issues.find(i => i.id === issueId);
+            if (!issue) return;
+            
+            const comment = issue.comments.find(c => c.id === commentId);
+            if (!comment || !comment.replies) return;
+            
+            comment.replies = comment.replies.filter(r => r.id !== replyId);
+            renderIssues();
+        }
+
+        function toggleReplyForm(issueId, commentId) {
+            const form = document.getElementById(`reply-form-${issueId}-${commentId}`);
+            if (form) {
+                form.style.display = form.style.display === 'none' ? 'flex' : 'none';
+            }
+        }
+
+        function applyFilters() {
+            filterPriority = document.getElementById('filterPriority').value;
+            filterCategory = document.getElementById('filterCategory').value;
+            filterStatus = document.getElementById('filterStatus').value;
+            renderIssues();
+        }
+
         function renderIssues() {
             const issuesList = document.getElementById('issuesList');
             const issueCount = document.getElementById('issueCount');
             
-            issueCount.textContent = `${issues.length} ${issues.length === 1 ? 'issue' : 'issues'}`;
+            // Filter issues based on selected filters
+            const filteredIssues = issues.filter(issue => {
+                const priorityMatch = !filterPriority || issue.priority === filterPriority;
+                const categoryMatch = !filterCategory || issue.category === filterCategory;
+                const statusMatch = !filterStatus || issue.status === filterStatus;
+                return priorityMatch && categoryMatch && statusMatch;
+            });
+            
+            issueCount.textContent = `${filteredIssues.length} ${filteredIssues.length === 1 ? 'issue' : 'issues'}`;
             
             issuesList.innerHTML = '';
             
@@ -212,8 +279,19 @@
                 `;
                 return;
             }
+
+            if (filteredIssues.length === 0) {
+                issuesList.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-icon">🔍</div>
+                        <h3>No matching issues</h3>
+                        <p>Try adjusting your filters</p>
+                    </div>
+                `;
+                return;
+            }
             
-            issues.forEach(issue => {
+            filteredIssues.forEach(issue => {
                 const issueCard = document.createElement('div');
                 const isExpanded = expandedIssueId === issue.id;
                 issueCard.className = `issue-card ${issue.priority} ${isExpanded ? 'expanded' : ''}`;
@@ -232,9 +310,38 @@
                                     <div class="comment">
                                         <div class="comment-header">
                                             <span class="comment-time">${formatDate(comment.createdAt)}</span>
-                                            <button class="btn-delete-comment" onclick="deleteComment('${issue.id}', '${comment.id}')" title="Delete comment">✕</button>
                                         </div>
                                         <p class="comment-text">${comment.text}</p>
+                                        <button class="btn-reply" onclick="toggleReplyForm('${issue.id}', '${comment.id}')">
+                                            💬 Reply
+                                        </button>
+                                        
+                                        ${comment.replies && comment.replies.length > 0 ? `
+                                            <div class="replies-section">
+                                                ${comment.replies.map(reply => `
+                                                    <div class="reply">
+                                                        <div class="reply-header">
+                                                            <span class="reply-time">${formatDate(reply.createdAt)}</span>
+                                                        </div>
+                                                        <p class="reply-text">${reply.text}</p>
+                                                    </div>
+                                                `).join('')}
+                                            </div>
+                                        ` : ''}
+                                        
+                                        <div class="reply-form" id="reply-form-${issue.id}-${comment.id}" style="display: none;">
+                                            <input 
+                                                type="text" 
+                                                id="reply-input-${issue.id}-${comment.id}" 
+                                                class="reply-input" 
+                                                placeholder="Write a reply..."
+                                                onkeypress="if(event.key === 'Enter') addReply('${issue.id}', '${comment.id}')"
+                                            >
+                                            <button class="btn-comment" onclick="addReply('${issue.id}', '${comment.id}')">
+                                                <span>↩️</span>
+                                                <span>Reply</span>
+                                            </button>
+                                        </div>
                                     </div>
                                 `).join('')}
                             </div>
@@ -257,7 +364,7 @@
                 }
                 
                 issueCard.innerHTML = `
-                    <div class="issue-main" onclick="toggleIssueExpanded('${issue.id}')" style="cursor: pointer;">
+                    <div class="issue-main" style="cursor: default;">
                         <div class="issue-header">
                             <h3 class="issue-title">${issue.title}</h3>
                             <span class="status-badge ${issue.status}">${getStatusLabel(issue.status)}</span>
@@ -278,17 +385,22 @@
                                         <span>${issue.fileName}</span>
                                     </span>
                                 ` : ''}
+                            </div>
+
+                            <div class="issue-controls">
+                                <select class="status-dropdown" onclick="event.stopPropagation();" onchange="changeStatus('${issue.id}', this.value);">
+                                    <option value="open" ${issue.status === 'open' ? 'selected' : ''}>Open</option>
+                                    <option value="in-progress" ${issue.status === 'in-progress' ? 'selected' : ''}>In Progress</option>
+                                    <option value="resolved" ${issue.status === 'resolved' ? 'selected' : ''}>Resolved</option>
+                                </select>
                                 <span class="meta-item comment-indicator">
                                     <span>💬</span>
                                     <span>${issue.comments.length}</span>
+                                    <button class="btn-toggle-comments" onclick="event.stopPropagation(); toggleIssueExpanded('${issue.id}');">
+                                        ${isExpanded ? 'Close' : 'Comments'}
+                                    </button>
                                 </span>
                             </div>
-                            
-                            <select class="status-dropdown" onchange="changeStatus('${issue.id}', this.value); event.stopPropagation();">
-                                <option value="open" ${issue.status === 'open' ? 'selected' : ''}>Open</option>
-                                <option value="in-progress" ${issue.status === 'in-progress' ? 'selected' : ''}>In Progress</option>
-                                <option value="resolved" ${issue.status === 'resolved' ? 'selected' : ''}>Resolved</option>
-                            </select>
                         </div>
                     </div>
                     ${commentsHtml}
