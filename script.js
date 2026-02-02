@@ -1,40 +1,11 @@
 // Logjika lol
-        let issues = [
-            {
-                id: '1',
-                title: 'Login button not responding on mobile',
-                description: 'When users try to log in from mobile devices, the button sometimes doesn\'t register taps. This seems to happen more frequently on iOS devices.',
-                category: 'Bug',
-                priority: 'high',
-                status: 'in-progress',
-                createdAt: new Date(Date.now() - 3600000 * 2),
-                comments: [],
-            },
-            {
-                id: '2',
-                title: 'Add dark mode support',
-                description: 'Users have requested a dark mode option to reduce eye strain during nighttime usage. This would be a great addition to improve user experience.',
-                category: 'Feature Request',
-                priority: 'medium',
-                status: 'open',
-                createdAt: new Date(Date.now() - 86400000 * 1),
-                comments: [],
-            },
-            {
-                id: '3',
-                title: 'Dashboard cards alignment issue',
-                description: 'The cards on the dashboard are not aligning properly on tablet screens. They overlap slightly when the viewport is around 768px.',
-                category: 'UI Issue',
-                priority: 'low',
-                status: 'resolved',
-                createdAt: new Date(Date.now() - 86400000 * 3),
-                fileName: 'screenshot.png',
-                comments: [],
-            },
-        ];
+        let issues = [];
+        const COOKIE_NAME = 'bzz_issues';
+        const COOKIE_EXPIRY_DAYS = 30;
 
         let currentPriority = 'medium';
         let currentFileName = '';
+        let currentFileData = '';
         let expandedIssueId = null;
         let filterPriority = '';
         let filterCategory = '';
@@ -47,6 +18,7 @@
                 document.body.classList.add('dark-mode');
                 updateDarkModeIcon();
             }
+            loadIssuesFromCookie();
             renderIssues();
         });
 
@@ -93,8 +65,15 @@
             if (file) {
                 currentFileName = file.name;
                 fileLabel.textContent = file.name;
+                
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    currentFileData = e.target.result;
+                };
+                reader.readAsDataURL(file);
             } else {
                 currentFileName = '';
+                currentFileData = '';
                 fileLabel.textContent = 'Upload file';
             }
         }
@@ -117,6 +96,7 @@
                 status: 'open',
                 createdAt: new Date(),
                 fileName: currentFileName || undefined,
+                fileData: currentFileData || undefined,
                 comments: [],
             };
             
@@ -125,6 +105,7 @@
             document.getElementById('issueForm').reset();
             document.getElementById('fileLabel').textContent = 'Upload file';
             currentFileName = '';
+            currentFileData = '';
             currentPriority = 'medium';
             
             document.querySelectorAll('.priority-btn').forEach(btn => {
@@ -136,13 +117,59 @@
             
             renderIssues();
             
-            // Hide the form after submission
             const formCard = document.getElementById('formCard');
             formCard.classList.add('hidden');
             document.getElementById('toggleText').textContent = ' + New Issue';
         }
 
+        function setCookie(name, value, days) {
+            const expires = new Date();
+            expires.setTime(expires.getTime() + days * 24 * 60 * 60 * 1000);
+            document.cookie = `${name}=${encodeURIComponent(JSON.stringify(value))};expires=${expires.toUTCString()};path=/`;
+        }
+
+        function getCookie(name) {
+            const nameEQ = name + '=';
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                let cookie = cookies[i].trim();
+                if (cookie.indexOf(nameEQ) === 0) {
+                    try {
+                        return JSON.parse(decodeURIComponent(cookie.substring(nameEQ.length)));
+                    } catch (e) {
+                        return null;
+                    }
+                }
+            }
+            return null;
+        }
+
+        function saveIssuesToCookie() {
+            setCookie(COOKIE_NAME, issues, COOKIE_EXPIRY_DAYS);
+        }
+
+        function loadIssuesFromCookie() {
+            const savedIssues = getCookie(COOKIE_NAME);
+            if (savedIssues && Array.isArray(savedIssues) && savedIssues.length > 0) {
+                issues = savedIssues.map(issue => ({
+                    ...issue,
+                    createdAt: new Date(issue.createdAt),
+                    comments: issue.comments.map(comment => ({
+                        ...comment,
+                        createdAt: new Date(comment.createdAt),
+                        replies: comment.replies ? comment.replies.map(reply => ({
+                            ...reply,
+                            createdAt: new Date(reply.createdAt),
+                        })) : [],
+                    })),
+                }));
+            }
+        }
+
         function formatDate(date) {
+            if (typeof date === 'string') {
+                date = new Date(date);
+            }
             const now = new Date();
             const diffMs = now.getTime() - date.getTime();
             const diffMins = Math.floor(diffMs / 60000);
@@ -157,7 +184,7 @@
 
         function getStatusLabel(status) {
             const labels = {
-                'open': '📋 Open',
+                'open': 'Open',
                 'in-progress': '⏳ In Progress',
                 'resolved': '✓ Resolved'
             };
@@ -168,12 +195,58 @@
             issues = issues.map(issue => 
                 issue.id === id ? { ...issue, status: newStatus } : issue
             );
+            saveIssuesToCookie();
             renderIssues();
+        }
+
+        function deleteIssue(id) {
+            if (confirm('Are you sure you want to delete this issue? This action cannot be undone.')) {
+                issues = issues.filter(issue => issue.id !== id);
+                saveIssuesToCookie();
+                renderIssues();
+            }
         }
 
         function toggleIssueExpanded(id) {
             expandedIssueId = expandedIssueId === id ? null : id;
             renderIssues();
+        }
+
+        function viewFilePreview(issueId, fileName) {
+            const issue = issues.find(i => i.id === issueId);
+            if (!issue || !issue.fileData) return;
+            
+            const isImage = /\.(jpg|jpeg|png|gif|webp|bmp|svg)$/i.test(fileName);
+            const isPdf = /\.pdf$/i.test(fileName);
+            
+            const modal = document.createElement('div');
+            modal.className = 'file-modal';
+            
+            let content = '';
+            if (isImage) {
+                content = `<img src="${issue.fileData}" alt="${fileName}" class="file-modal-image">`;
+            } else if (isPdf) {
+                content = `<iframe src="${issue.fileData}" class="file-modal-pdf"></iframe>`;
+            } else {
+                content = `<div class="file-not-viewable">📁 Cannot preview this file type</div>`;
+            }
+            
+            modal.innerHTML = `
+                <div class="file-modal-content">
+                    <div class="file-modal-header">
+                        <h3>${fileName}</h3>
+                        <button class="file-modal-close" onclick="this.closest('.file-modal').remove();">✕</button>
+                    </div>
+                    <div class="file-modal-body">
+                        ${content}
+                    </div>
+                </div>
+            `;
+            
+            document.body.appendChild(modal);
+            modal.addEventListener('click', function(e) {
+                if (e.target === modal) modal.remove();
+            });
         }
 
         function addComment(issueId) {
@@ -187,11 +260,12 @@
             issue.comments.push({
                 id: Date.now().toString(),
                 text: commentText,
-                createdAt: new Date(),
+                createdAt: new Date().toISOString(),
                 replies: [],
             });
             
             document.getElementById(`comment-input-${issueId}`).value = '';
+            saveIssuesToCookie();
             renderIssues();
         }
 
@@ -200,6 +274,7 @@
             if (!issue) return;
             
             issue.comments = issue.comments.filter(c => c.id !== commentId);
+            saveIssuesToCookie();
             renderIssues();
         }
 
@@ -221,10 +296,11 @@
             comment.replies.push({
                 id: Date.now().toString(),
                 text: replyText,
-                createdAt: new Date(),
+                createdAt: new Date().toISOString(),
             });
             
             document.getElementById(`reply-input-${issueId}-${commentId}`).value = '';
+            saveIssuesToCookie();
             renderIssues();
         }
 
@@ -236,6 +312,7 @@
             if (!comment || !comment.replies) return;
             
             comment.replies = comment.replies.filter(r => r.id !== replyId);
+            saveIssuesToCookie();
             renderIssues();
         }
 
@@ -257,7 +334,6 @@
             const issuesList = document.getElementById('issuesList');
             const issueCount = document.getElementById('issueCount');
             
-            // Filter issues based on selected filters
             const filteredIssues = issues.filter(issue => {
                 const priorityMatch = !filterPriority || issue.priority === filterPriority;
                 const categoryMatch = !filterCategory || issue.category === filterCategory;
@@ -380,9 +456,9 @@
                                     <span>${formatDate(issue.createdAt)}</span>
                                 </span>
                                 ${issue.fileName ? `
-                                    <span class="meta-item">
+                                    <span class="meta-item file-item" onclick="viewFilePreview('${issue.id}', '${issue.fileName}');">
                                         <span>📄</span>
-                                        <span>${issue.fileName}</span>
+                                        <span class="file-link">${issue.fileName}</span>
                                     </span>
                                 ` : ''}
                             </div>
@@ -400,6 +476,9 @@
                                         ${isExpanded ? 'Close' : 'Comments'}
                                     </button>
                                 </span>
+                                <button class="btn-delete-issue" onclick="event.stopPropagation(); deleteIssue('${issue.id}');">
+                                    Delete
+                                </button>
                             </div>
                         </div>
                     </div>
