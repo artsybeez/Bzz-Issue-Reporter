@@ -115,6 +115,7 @@
                 }
             });
             
+            saveIssuesToCookie();
             renderIssues();
             
             const formCard = document.getElementById('formCard');
@@ -122,47 +123,49 @@
             document.getElementById('toggleText').textContent = ' + New Issue';
         }
 
-        function setCookie(name, value, days) {
-            const expires = new Date();
-            expires.setTime(expires.getTime() + days * 24 * 60 * 60 * 1000);
-            document.cookie = `${name}=${encodeURIComponent(JSON.stringify(value))};expires=${expires.toUTCString()};path=/`;
-        }
-
-        function getCookie(name) {
-            const nameEQ = name + '=';
-            const cookies = document.cookie.split(';');
-            for (let i = 0; i < cookies.length; i++) {
-                let cookie = cookies[i].trim();
-                if (cookie.indexOf(nameEQ) === 0) {
+        function saveIssuesToCookie() {
+            try {
+                localStorage.setItem(COOKIE_NAME, JSON.stringify(issues));
+            } catch (e) {
+                if (e.name === 'QuotaExceededError') {
+                    console.warn('Storage full, saving issues without file data');
+                    const issuesToSave = issues.map(issue => {
+                        const { fileData, ...rest } = issue;
+                        return rest;
+                    });
                     try {
-                        return JSON.parse(decodeURIComponent(cookie.substring(nameEQ.length)));
-                    } catch (e) {
-                        return null;
+                        localStorage.setItem(COOKIE_NAME, JSON.stringify(issuesToSave));
+                    } catch (e2) {
+                        console.error('Failed to save even without files:', e2);
                     }
+                } else {
+                    console.error('Failed to save issues to localStorage:', e);
                 }
             }
-            return null;
-        }
-
-        function saveIssuesToCookie() {
-            setCookie(COOKIE_NAME, issues, COOKIE_EXPIRY_DAYS);
         }
 
         function loadIssuesFromCookie() {
-            const savedIssues = getCookie(COOKIE_NAME);
-            if (savedIssues && Array.isArray(savedIssues) && savedIssues.length > 0) {
-                issues = savedIssues.map(issue => ({
-                    ...issue,
-                    createdAt: new Date(issue.createdAt),
-                    comments: issue.comments.map(comment => ({
-                        ...comment,
-                        createdAt: new Date(comment.createdAt),
-                        replies: comment.replies ? comment.replies.map(reply => ({
-                            ...reply,
-                            createdAt: new Date(reply.createdAt),
+            try {
+                const savedData = localStorage.getItem(COOKIE_NAME);
+                if (!savedData) return;
+                
+                const savedIssues = JSON.parse(savedData);
+                if (savedIssues && Array.isArray(savedIssues) && savedIssues.length > 0) {
+                    issues = savedIssues.map(issue => ({
+                        ...issue,
+                        createdAt: new Date(issue.createdAt),
+                        comments: issue.comments ? issue.comments.map(comment => ({
+                            ...comment,
+                            createdAt: new Date(comment.createdAt),
+                            replies: comment.replies ? comment.replies.map(reply => ({
+                                ...reply,
+                                createdAt: new Date(reply.createdAt),
+                            })) : [],
                         })) : [],
-                    })),
-                }));
+                    }));
+                }
+            } catch (e) {
+                console.error('Failed to load issues from localStorage:', e);
             }
         }
 
