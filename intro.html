@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome | Bleta's Issue Reporter</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif'],
+                    },
+                    animation: {
+                        'fade-in': 'fadeIn 0.6s ease-out',
+                        'slide-up': 'slideUp 0.5s ease-out',
+                        'pulse-soft': 'pulseSoft 2s infinite',
+                    },
+                    keyframes: {
+                        fadeIn: {
+                            '0%': { opacity: '0' },
+                            '100%': { opacity: '1' },
+                        },
+                        slideUp: {
+                            '0%': { opacity: '0', transform: 'translateY(20px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' },
+                        },
+                        pulseSoft: {
+                            '0%, 100%': { opacity: '1' },
+                            '50%': { opacity: '0.7' },
+                        },
+                    },
+                },
+            },
+        }
+    </script>
+    <style>
+        :root {
+            --card-bg: rgba(255, 255, 255, 0.9);
+            --card-bg-dark: rgba(23, 23, 23, 0.85);
+            --border-color: rgba(0, 0, 0, 0.06);
+            --border-color-dark: rgba(255, 255, 255, 0.08);
+            --accent: #6366f1;
+            --accent-hover: #4f46e5;
+        }
+
+        .glass-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--border-color);
+        }
+
+        .dark .glass-card {
+            background: var(--card-bg-dark);
+            border-color: var(--border-color-dark);
+        }
+
+        .gradient-text {
+            background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .feature-card {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .feature-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 20px 40px -12px rgba(99, 102, 241, 0.15);
+        }
+
+        .dark .feature-card:hover {
+            box-shadow: 0 20px 40px -12px rgba(99, 102, 241, 0.25);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary:hover {
+            transform: scale(1.02);
+            box-shadow: 0 10px 30px -10px rgba(99, 102, 241, 0.5);
+        }
+
+        .blob {
+            position: fixed;
+            border-radius: 50%;
+            filter: blur(80px);
+            opacity: 0.4;
+            z-index: -1;
+            animation: float 20s infinite ease-in-out;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            33% { transform: translate(30px, -50px) scale(1.1); }
+            66% { transform: translate(-20px, 20px) scale(0.9); }
+        }
+
+        .blob-1 { top: -10%; left: -10%; width: 400px; height: 400px; background: #6366f1; animation-delay: 0s; }
+        .blob-2 { bottom: -10%; right: -10%; width: 350px; height: 350px; background: #a855f7; animation-delay: -5s; }
+        .blob-3 { top: 50%; left: 50%; width: 300px; height: 300px; background: #ec4899; animation-delay: -10s; transform: translate(-50%, -50%); }
+
+        .dark .blob { opacity: 0.15; }
+    </style>
+</head>
+<body class="min-h-screen bg-gray-50 text-gray-900 dark:bg-gray-950 dark:text-gray-100 transition-colors duration-300">
+    <!-- Ambient Background -->
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
+    <div class="blob blob-3"></div>
+
+    <!-- Header -->
+    <header class="sticky top-0 z-50">
+        <div class="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
+            <div class="mt-4 glass-card rounded-2xl px-6 py-4 animate-fade-in">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-4">
+                        <div class="relative group">
+                            <div class="absolute inset-0 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-xl blur opacity-40 group-hover:opacity-60 transition-opacity"></div>
+                            <img src="https://png.pngtree.com/png-clipart/20250307/original/pngtree-dog-wearing-glasses-and-looking-smart-png-image_20595001.png" 
+                                 alt="Bleta's Logo" 
+                                 class="relative w-10 h-10 rounded-xl object-cover border-2 border-white/20">
+                        </div>
+                        <h1 class="text-lg font-semibold tracking-tight">
+                            <span class="hidden sm:inline">Bleta's Issue Reporter</span>
+                            <span class="sm:hidden">Issue Reporter</span>
+                        </h1>
+                    </div>
+                    <button onclick="toggleDarkMode()" 
+                            class="p-2.5 rounded-xl bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition-all duration-200 group"
+                            aria-label="Toggle dark mode">
+                        <i data-lucide="moon" class="w-5 h-5 hidden dark:block text-amber-400"></i>
+                        <i data-lucide="sun" class="w-5 h-5 block dark:hidden text-orange-500"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8 py-12">
+        <!-- Hero -->
+        <div class="text-center mb-12 animate-slide-up">
+            <p class="text-sm font-medium text-indigo-600 dark:text-indigo-400 uppercase tracking-wider mb-3">Welcome</p>
+            <h2 class="text-4xl sm:text-5xl font-bold tracking-tight mb-4">
+                Report Issues <span class="gradient-text">Effortlessly</span>
+            </h2>
+            <p class="text-lg text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
+                A clean, organized way to track bugs and feature requests. Built for clarity and speed.
+            </p>
+        </div>
+
+        <!-- Main Card -->
+        <div class="glass-card rounded-3xl p-8 sm:p-10 animate-slide-up" style="animation-delay: 0.1s;">
+            <!-- About Section -->
+            <div class="mb-10">
+                <h3 class="text-2xl font-bold mb-3">About this tool</h3>
+                <p class="text-gray-600 dark:text-gray-400 leading-relaxed">
+                    A streamlined issue tracker designed to help you document bugs, device problems, UI inconsistencies, 
+                    and feature requests—all in one organized place.
+                </p>
+            </div>
+
+            <!-- Features Grid -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-10">
+                <div class="feature-card bg-gray-100/50 dark:bg-white/5 rounded-2xl p-5 border border-gray-200/50 dark:border-white/10">
+                    <div class="w-10 h-10 rounded-xl bg-indigo-100 dark:bg-indigo-900/30 flex items-center justify-center mb-4">
+                        <i data-lucide="file-plus" class="w-5 h-5 text-indigo-600 dark:text-indigo-400"></i>
+                    </div>
+                    <h4 class="font-semibold mb-2">Submit Issues</h4>
+                    <p class="text-sm text-gray-600 dark:text-gray-400">Create detailed reports with titles, descriptions, categories, and file attachments.</p>
+                </div>
+
+                <div class="feature-card bg-gray-100/50 dark:bg-white/5 rounded-2xl p-5 border border-gray-200/50 dark:border-white/10">
+                    <div class="w-10 h-10 rounded-xl bg-purple-100 dark:bg-purple-900/30 flex items-center justify-center mb-4">
+                        <i data-lucide="flag" class="w-5 h-5 text-purple-600 dark:text-purple-400"></i>
+                    </div>
+                    <h4 class="font-semibold mb-2">Set Priority</h4>
+                    <p class="text-sm text-gray-600 dark:text-gray-400">Mark issues as low, medium, or high priority to manage your workflow.</p>
+                </div>
+
+                <div class="feature-card bg-gray-100/50 dark:bg-white/5 rounded-2xl p-5 border border-gray-200/50 dark:border-white/10">
+                    <div class="w-10 h-10 rounded-xl bg-pink-100 dark:bg-pink-900/30 flex items-center justify-center mb-4">
+                        <i data-lucide="filter" class="w-5 h-5 text-pink-600 dark:text-pink-400"></i>
+                    </div>
+                    <h4 class="font-semibold mb-2">Filter & Browse</h4>
+                    <p class="text-sm text-gray-600 dark:text-gray-400">Quickly find issues by priority, category, and status with smart filtering.</p>
+                </div>
+
+                <div class="feature-card bg-gray-100/50 dark:bg-white/5 rounded-2xl p-5 border border-gray-200/50 dark:border-white/10">
+                    <div class="w-10 h-10 rounded-xl bg-amber-100 dark:bg-amber-900/30 flex items-center justify-center mb-4">
+                        <i data-lucide="sparkles" class="w-5 h-5 text-amber-600 dark:text-amber-400"></i>
+                    </div>
+                    <h4 class="font-semibold mb-2">Dark Mode</h4>
+                    <p class="text-sm text-gray-600 dark:text-gray-400">Seamlessly switch between light and dark themes for comfortable viewing.</p>
+                </div>
+            </div>
+
+            <!-- CTA -->
+            <div class="flex flex-col sm:flex-row items-center gap-4 pt-6 border-t border-gray-200 dark:border-white/10">
+                <button onclick="continueToApp()" 
+                        class="btn-primary w-full sm:w-auto px-8 py-4 rounded-xl text-white font-semibold flex items-center justify-center gap-3 group">
+                    <span>Continue to Issue Reporter</span>
+                    <i data-lucide="arrow-right" class="w-5 h-5 group-hover:translate-x-1 transition-transform"></i>
+                </button>
+                <span class="text-sm text-gray-500 dark:text-gray-500">
+                    Takes you to the main dashboard
+                </span>
+            </div>
+        </div>
+
+        <!-- Trust Indicators -->
+        <div class="mt-12 flex flex-wrap items-center justify-center gap-6 text-sm text-gray-500 dark:text-gray-500 animate-fade-in" style="animation-delay: 0.2s;">
+            <div class="flex items-center gap-2">
+                <i data-lucide="shield-check" class="w-4 h-4"></i>
+                <span>Data saved locally</span>
+            </div>
+            <div class="flex items-center gap-2">
+                <i data-lucide="zap" class="w-4 h-4"></i>
+                <span>Fast & responsive</span>
+            </div>
+            <div class="flex items-center gap-2">
+                <i data-lucide="lock" class="w-4 h-4"></i>
+                <span>Privacy focused</span>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        const INTRO_SEEN_KEY = 'bzz_seen_intro';
+
+        function toggleDarkMode() {
+            document.documentElement.classList.toggle('dark');
+            const isDark = document.documentElement.classList.contains('dark');
+            localStorage.setItem('darkMode', isDark);
+        }
+
+        function continueToApp() {
+            localStorage.setItem(INTRO_SEEN_KEY, 'true');
+            window.location.href = 'index.html?fromIntro=1';
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            // Restore dark mode preference
+            const savedDarkMode = localStorage.getItem('darkMode');
+            const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            
+            if (savedDarkMode === 'true' || (savedDarkMode === null && systemPrefersDark)) {
+                document.documentElement.classList.add('dark');
+            }
+
+            // Initialize Lucide icons
+            lucide.createIcons();
+
+            // Skip intro if already seen (optional)
+            // Uncomment below to auto-redirect returning users
+            /*
+            if (localStorage.getItem(INTRO_SEEN_KEY) === 'true') {
+                window.location.href = 'index.html?fromIntro=1';
+            }
+            */
+        });
+
+        // Listen for system theme changes
+        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
+            if (localStorage.getItem('darkMode') === null) {
+                document.documentElement.classList.toggle('dark', e.matches);
+            }
+        });
+    </script>
+</body>
+</html>
