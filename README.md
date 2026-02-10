@@ -1,2 +1,2 @@
-<h1>Hello and welcome to my Issue Reporter!</h1>
-<p>This code has been created for Dev League! Woohooo!!</p>
+### Bleta's Issue Reporter
+<img src = "https://static.vecteezy.com/system/resources/thumbnails/058/052/546/small/dog-with-glasses-cute-smart-animal-close-up-portrait-cut-out-transparent-png.png">
