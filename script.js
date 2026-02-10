@@ -1,4 +1,3 @@
-// State Management
 let issues = [];
 let selectedPriority = 'medium';
 let currentFilter = { priority: '', category: '', status: '' };
@@ -8,9 +7,9 @@ let currentFileData = '';
 
 const STORAGE_KEY = 'bzz_issues';
 
-// Initialize Application
+// initialize site
 document.addEventListener('DOMContentLoaded', function() {
-    // Restore dark mode preference
+    // restore dark mode preference
     const savedDarkMode = localStorage.getItem('darkMode');
     const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
     
@@ -18,7 +17,7 @@ document.addEventListener('DOMContentLoaded', function() {
         document.documentElement.classList.add('dark');
     }
 
-    // Load issues from localStorage
+    // load issues from localStorage
     loadIssues();
     
     // Initialize Lucide icons
@@ -91,8 +90,6 @@ function handleFileChange(event) {
     if (file) {
         currentFileName = file.name;
         label.textContent = file.name;
-        
-        // Read file as base64 for storage
         const reader = new FileReader();
         reader.onload = function(e) {
             currentFileData = e.target.result;
@@ -142,10 +139,9 @@ function loadIssues() {
         const saved = localStorage.getItem(STORAGE_KEY);
         if (saved) {
             issues = JSON.parse(saved);
-            // Ensure comments array exists for each issue
             issues = issues.map(issue => ({
                 ...issue,
-                id: issue.id.toString(), // Ensure ID is string
+                id: issue.id.toString(),
                 comments: (issue.comments || []).map(comment => ({
                     ...comment,
                     id: comment.id.toString(),
@@ -162,7 +158,7 @@ function loadIssues() {
     renderIssues();
 }
 
-// Save Issues to localStorage
+// Save Issues to localStorage mmm yummy cookies
 function saveIssues() {
     try {
         localStorage.setItem(STORAGE_KEY, JSON.stringify(issues));

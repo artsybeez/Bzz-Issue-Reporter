@@ -113,12 +113,12 @@
     </style>
 </head>
 <body class="min-h-screen bg-gray-50 text-gray-900 dark:bg-gray-950 dark:text-gray-100 transition-colors duration-300">
-    <!-- Ambient Background -->
+    <!-- ambient bg -->
     <div class="blob blob-1"></div>
     <div class="blob blob-2"></div>
     <div class="blob blob-3"></div>
 
-    <!-- Header -->
+    <!-- header -->
     <header class="sticky top-0 z-50">
         <div class="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
             <div class="mt-4 glass-card rounded-2xl px-6 py-4 animate-fade-in">
@@ -146,9 +146,9 @@
         </div>
     </header>
 
-    <!-- Main Content -->
+    <!-- main content -->
     <main class="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8 py-12">
-        <!-- Hero -->
+        <!-- hero -->
         <div class="text-center mb-12 animate-slide-up">
             <p class="text-sm font-medium text-indigo-600 dark:text-indigo-400 uppercase tracking-wider mb-3">Welcome</p>
             <h2 class="text-4xl sm:text-5xl font-bold tracking-tight mb-4">
@@ -159,18 +159,18 @@
             </p>
         </div>
 
-        <!-- Main Card -->
+        <!-- main card -->
         <div class="glass-card rounded-3xl p-8 sm:p-10 animate-slide-up" style="animation-delay: 0.1s;">
-            <!-- About Section -->
+            <!-- about section -->
             <div class="mb-10">
                 <h3 class="text-2xl font-bold mb-3">About this tool</h3>
                 <p class="text-gray-600 dark:text-gray-400 leading-relaxed">
                     Bleta's issue tracker is designed to help you document bugs, device problems, UI inconsistencies, 
-                    feature requests and any other related issue. All of this in one organized place.
+                    feature requests and any other related issue. All of this in one organized place. I created this for DevLeague.
                 </p>
             </div>
 
-            <!-- Features Grid -->
+            <!-- grid of features -->
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-10">
                 <div class="feature-card bg-gray-100/50 dark:bg-white/5 rounded-2xl p-5 border border-gray-200/50 dark:border-white/10">
                     <div class="w-10 h-10 rounded-xl bg-indigo-100 dark:bg-indigo-900/30 flex items-center justify-center mb-4">
@@ -205,7 +205,7 @@
                 </div>
             </div>
 
-            <!-- CTA -->
+            <!-- continue to main page -->
             <div class="flex flex-col sm:flex-row items-center gap-4 pt-6 border-t border-gray-200 dark:border-white/10">
                 <button onclick="continueToApp()" 
                         class="btn-primary w-full sm:w-auto px-8 py-4 rounded-xl text-white font-semibold flex items-center justify-center gap-3 group">
@@ -218,7 +218,7 @@
             </div>
         </div>
 
-        <!-- Trust Indicators -->
+        <!-- some indicators at the bottom -->
         <div class="mt-12 flex flex-wrap items-center justify-center gap-6 text-sm text-gray-500 dark:text-gray-500 animate-fade-in" style="animation-delay: 0.2s;">
             <div class="flex items-center gap-2">
                 <i data-lucide="shield-check" class="w-4 h-4"></i>
@@ -249,9 +249,9 @@
             window.location.href = 'index.html?fromIntro=1';
         }
 
-        // Initialize
+        // initialize
         document.addEventListener('DOMContentLoaded', function() {
-            // Restore dark mode preference
+            // restore dark mode preference
             const savedDarkMode = localStorage.getItem('darkMode');
             const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
             
@@ -271,7 +271,7 @@
             */
         });
 
-        // Listen for system theme changes
+        // listen for system theme changes
         window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
             if (localStorage.getItem('darkMode') === null) {
                 document.documentElement.classList.toggle('dark', e.matches);

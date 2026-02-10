@@ -65,7 +65,6 @@
     box-shadow: 0 10px 30px -10px rgba(99, 102, 241, 0.5);
 }
 
-/* Animated Background Blobs */
 .blob {
     position: fixed;
     border-radius: 50%;
@@ -113,7 +112,6 @@
     opacity: 0.15; 
 }
 
-/* Priority Badges */
 .priority-low { 
     background-color: #dbeafe; 
     color: #1e40af; 
@@ -150,7 +148,6 @@
     border-color: rgba(252, 165, 165, 0.3); 
 }
 
-/* Status Badges */
 .status-open { 
     background-color: #dbeafe; 
     color: #1e40af; 
@@ -181,7 +178,6 @@
     color: #6ee7b7; 
 }
 
-/* File Upload Styling */
 input[type="file"] {
     display: none;
 }
@@ -213,7 +209,6 @@ input[type="file"] {
     background: rgba(99, 102, 241, 0.1);
 }
 
-/* Priority Selector */
 .priority-selector button {
     transition: all 0.2s;
 }
@@ -223,7 +218,6 @@ input[type="file"] {
     box-shadow: 0 4px 12px -2px currentColor;
 }
 
-/* Comments Section */
 .comments-section {
     margin-top: 24px;
     padding-top: 20px;
@@ -334,7 +328,6 @@ input[type="file"] {
     box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
 }
 
-/* Reply Styles */
 .replies-section {
     margin-top: 12px;
     padding-left: 16px;
@@ -425,7 +418,6 @@ input[type="file"] {
     box-shadow: 0 2px 6px rgba(99, 102, 241, 0.3);
 }
 
-/* File Modal */
 .file-modal {
     position: fixed;
     top: 0;
@@ -533,7 +525,6 @@ input[type="file"] {
     color: #9ca3af;
 }
 
-/* Issue Card Expanded State */
 .issue-card.expanded {
     box-shadow: 0 8px 24px rgba(99, 102, 241, 0.15);
 }
@@ -542,7 +533,6 @@ input[type="file"] {
     box-shadow: 0 8px 24px rgba(99, 102, 241, 0.25);
 }
 
-/* Delete Buttons */
 .btn-delete-comment {
     background: none;
     border: none;
@@ -584,7 +574,6 @@ input[type="file"] {
     box-shadow: 0 2px 6px rgba(239, 68, 68, 0.3);
 }
 
-/* Comments Toggle Button */
 .btn-toggle-comments {
     font-size: 12px;
     padding: 6px 12px;
@@ -631,7 +620,6 @@ input[type="file"] {
     color: #9ca3af;
 }
 
-/* Status Dropdown */
 .status-dropdown {
     font-size: 12px;
     padding: 6px 10px;
@@ -657,7 +645,6 @@ input[type="file"] {
     border-color: #6366f1;
 }
 
-/* Empty State */
 .no-comments {
     font-size: 13px;
     color: #6b7280;
