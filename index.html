@@ -61,7 +61,7 @@
     </script>
     <link rel="stylesheet" href="styles.css">
 </head>
-<body class="min-h-screen bg-gray-50 text-gray-900 dark:bg-gray-950 dark:text-gray-100 transition-colors duration-300">
+<body class="min-h-screen bg-white text-gray-900 dark:bg-gray-950 dark:text-gray-100 transition-colors duration-300">
     <!-- ambient bg -->
     <div class="blob blob-1"></div>
     <div class="blob blob-2"></div>
@@ -70,28 +70,33 @@
     <!-- header -->
     <header class="sticky top-0 z-50">
         <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-            <div class="mt-4 glass-card rounded-2xl px-6 py-4 animate-fade-in">
+            <div class="mt-4 glass-card rounded-2xl px-6 py-4 animate-fade-in bg-white/80 dark:bg-gray-900/80 shadow-lg border border-gray-200 dark:border-gray-800">
                 <div class="flex items-center justify-between">
                     <div class="flex items-center gap-4">
                         <div class="relative group">
                             <div class="absolute inset-0 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-xl blur opacity-40 group-hover:opacity-60 transition-opacity"></div>
                             <img src="https://png.pngtree.com/png-clipart/20250307/original/pngtree-dog-wearing-glasses-and-looking-smart-png-image_20595001.png" 
                                  alt="Bleta's Logo" 
-                                 class="relative w-10 h-10 rounded-xl object-cover border-2 border-white/20">
+                                 class="relative w-10 h-10 rounded-xl object-cover border-2 border-white/20 shadow-md">
                         </div>
-                        <h1 class="text-lg font-semibold tracking-tight">
+                        <h1 class="text-lg font-semibold tracking-tight text-gray-800 dark:text-gray-100">
                             <span class="hidden sm:inline">Bleta's Issue Reporter</span>
                             <span class="sm:hidden">Issue Reporter</span>
                         </h1>
                     </div>
                     <div class="flex items-center gap-2">
+                        <button onclick="exportIssues()" 
+                                class="px-4 py-2.5 rounded-xl bg-gray-100 hover:bg-gray-200 dark:bg-gray-800 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 font-medium flex items-center gap-2 text-sm transition-all border border-gray-300 dark:border-gray-600">
+                            <i data-lucide="download" class="w-4 h-4"></i>
+                            <span class="hidden sm:inline">Export</span>
+                        </button>
                         <button onclick="toggleForm()" 
-                                class="btn-primary px-4 py-2.5 rounded-xl text-white font-medium flex items-center gap-2 text-sm">
+                                class="btn-primary px-4 py-2.5 rounded-xl text-white font-medium flex items-center gap-2 text-sm shadow-lg hover:shadow-xl transition-all">
                             <i data-lucide="plus" class="w-4 h-4"></i>
                             <span id="toggleText">New Issue</span>
                         </button>
                         <button onclick="toggleDarkMode()" 
-                                class="p-2.5 rounded-xl bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition-all duration-200"
+                                class="p-2.5 rounded-xl bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 border border-gray-300 dark:border-gray-600 transition-all duration-200"
                                 aria-label="Toggle dark mode">
                             <i data-lucide="moon" class="w-5 h-5 hidden dark:block text-amber-400"></i>
                             <i data-lucide="sun" class="w-5 h-5 block dark:hidden text-orange-500"></i>
@@ -107,7 +112,7 @@
         <!-- hero section -->
         <div class="text-center mb-8 animate-slide-up">
             <p class="text-sm font-medium text-indigo-600 dark:text-indigo-400 uppercase tracking-wider mb-2">Dashboard</p>
-            <h2 class="text-3xl sm:text-4xl font-bold tracking-tight mb-3">
+            <h2 class="text-3xl sm:text-4xl font-bold tracking-tight mb-3 text-gray-900 dark:text-white">
                 <span class="gradient-text">Track & manage</span> your issues
             </h2>
             <p class="text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
@@ -115,12 +120,63 @@
             </p>
         </div>
 
+        <!-- Data Visualization Boxes -->
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8 animate-slide-up" style="animation-delay: 0.05s;">
+            <!-- Total Issues -->
+            <div class="glass-card bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-900 rounded-2xl p-5 border border-gray-200 dark:border-gray-700 shadow-md">
+                <div class="flex items-center justify-between mb-2">
+                    <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Total Issues</span>
+                    <div class="w-8 h-8 rounded-lg bg-gray-500/20 flex items-center justify-center">
+                        <i data-lucide="inbox" class="w-4 h-4 text-gray-600 dark:text-gray-400"></i>
+                    </div>
+                </div>
+                <div class="text-3xl font-bold text-gray-900 dark:text-white" id="statTotal">0</div>
+                <div class="text-xs text-gray-500 dark:text-gray-400 mt-1">All time</div>
+            </div>
+
+            <!-- Open Issues - BLUE -->
+            <div class="glass-card bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/30 dark:to-blue-800/30 rounded-2xl p-5 border border-blue-200 dark:border-blue-800 shadow-md">
+                <div class="flex items-center justify-between mb-2">
+                    <span class="text-sm font-medium text-blue-700 dark:text-blue-300">Open</span>
+                    <div class="w-8 h-8 rounded-lg bg-blue-500/20 flex items-center justify-center">
+                        <i data-lucide="circle" class="w-4 h-4 text-blue-600 dark:text-blue-400"></i>
+                    </div>
+                </div>
+                <div class="text-3xl font-bold text-blue-900 dark:text-blue-100" id="statOpen">0</div>
+                <div class="text-xs text-blue-600 dark:text-blue-400 mt-1">Needs attention</div>
+            </div>
+
+            <!-- In Progress - YELLOW/AMBER -->
+            <div class="glass-card bg-gradient-to-br from-amber-50 to-amber-100 dark:from-amber-900/30 dark:to-amber-800/30 rounded-2xl p-5 border border-amber-200 dark:border-amber-800 shadow-md">
+                <div class="flex items-center justify-between mb-2">
+                    <span class="text-sm font-medium text-amber-700 dark:text-amber-300">In Progress</span>
+                    <div class="w-8 h-8 rounded-lg bg-amber-500/20 flex items-center justify-center">
+                        <i data-lucide="loader" class="w-4 h-4 text-amber-600 dark:text-amber-400"></i>
+                    </div>
+                </div>
+                <div class="text-3xl font-bold text-amber-900 dark:text-amber-100" id="statInProgress">0</div>
+                <div class="text-xs text-amber-600 dark:text-amber-400 mt-1">Being worked on</div>
+            </div>
+
+            <!-- Resolved - GREEN -->
+            <div class="glass-card bg-gradient-to-br from-emerald-50 to-emerald-100 dark:from-emerald-900/30 dark:to-emerald-800/30 rounded-2xl p-5 border border-emerald-200 dark:border-emerald-800 shadow-md">
+                <div class="flex items-center justify-between mb-2">
+                    <span class="text-sm font-medium text-emerald-700 dark:text-emerald-300">Resolved</span>
+                    <div class="w-8 h-8 rounded-lg bg-emerald-500/20 flex items-center justify-center">
+                        <i data-lucide="check-circle" class="w-4 h-4 text-emerald-600 dark:text-emerald-400"></i>
+                    </div>
+                </div>
+                <div class="text-3xl font-bold text-emerald-900 dark:text-emerald-100" id="statResolved">0</div>
+                <div class="text-xs text-emerald-600 dark:text-emerald-400 mt-1">Completed</div>
+            </div>
+        </div>
+
         <!-- issue submission form -->
         <div id="formCard" class="hidden mb-8 animate-slide-up">
-            <div class="glass-card rounded-3xl p-6 sm:p-8">
+            <div class="glass-card rounded-3xl p-6 sm:p-8 bg-white/90 dark:bg-gray-900/90 border border-gray-200 dark:border-gray-700 shadow-xl">
                 <div class="flex items-center justify-between mb-6">
-                    <h3 class="text-2xl font-bold">Submit New Issue</h3>
-                    <button onclick="toggleForm()" class="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
+                    <h3 class="text-2xl font-bold text-gray-900 dark:text-white">Submit New Issue</h3>
+                    <button onclick="toggleForm()" class="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors text-gray-600 dark:text-gray-400">
                         <i data-lucide="x" class="w-5 h-5"></i>
                     </button>
                 </div>
@@ -128,25 +184,25 @@
                 <form id="issueForm" onsubmit="handleSubmit(event)" class="space-y-6">
                     <!-- issue title -->
                     <div>
-                        <label for="title" class="block text-sm font-medium mb-2">Issue Title</label>
+                        <label for="title" class="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">Issue Title</label>
                         <input 
                             type="text" 
                             id="title" 
                             placeholder="Brief description of the issue..."
                             required
-                            class="w-full px-4 py-3 rounded-xl bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 outline-none transition-all"
+                            class="w-full px-4 py-3 rounded-xl bg-gray-50 dark:bg-gray-800 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 outline-none transition-all"
                         >
                     </div>
 
                     <!-- description -->
                     <div>
-                        <label for="description" class="block text-sm font-medium mb-2">Description</label>
+                        <label for="description" class="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">Description</label>
                         <textarea 
                             id="description" 
                             placeholder="Provide more details about the issue..."
                             required
                             rows="4"
-                            class="w-full px-4 py-3 rounded-xl bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 outline-none transition-all resize-none"
+                            class="w-full px-4 py-3 rounded-xl bg-gray-50 dark:bg-gray-800 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 outline-none transition-all resize-none"
                         ></textarea>
                     </div>
 
@@ -154,8 +210,8 @@
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
                         <!-- category -->
                         <div>
-                            <label for="category" class="block text-sm font-medium mb-2">Category</label>
-                            <select id="category" class="w-full px-4 py-3 rounded-xl bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 outline-none transition-all">
+                            <label for="category" class="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">Category</label>
+                            <select id="category" class="w-full px-4 py-3 rounded-xl bg-gray-50 dark:bg-gray-800 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 outline-none transition-all">
                                 <option value="Bug">Bug</option>
                                 <option value="Feature Request">Feature Request</option>
                                 <option value="UI Issue">UI Issue</option>
@@ -165,7 +221,7 @@
 
                         <!-- file attachment -->
                         <div>
-                            <label for="file" class="block text-sm font-medium mb-2">
+                            <label for="file" class="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
                                 Attachment <span class="text-gray-500 text-xs">(optional)</span>
                             </label>
                             <input type="file" id="file" onchange="handleFileChange(event)">
@@ -178,7 +234,7 @@
 
                     <!-- priority selector -->
                     <div>
-                        <label class="block text-sm font-medium mb-3">Priority</label>
+                        <label class="block text-sm font-medium mb-3 text-gray-700 dark:text-gray-300">Priority</label>
                         <div class="priority-selector flex gap-3">
                             <button 
                                 type="button" 
@@ -205,7 +261,7 @@
                     </div>
 
                     <!-- submit button -->
-                    <button type="submit" class="btn-primary w-full px-6 py-4 rounded-xl text-white font-semibold flex items-center justify-center gap-3">
+                    <button type="submit" class="btn-primary w-full px-6 py-4 rounded-xl text-white font-semibold flex items-center justify-center gap-3 shadow-lg hover:shadow-xl transition-all">
                         <i data-lucide="send" class="w-5 h-5"></i>
                         <span>Submit Issue</span>
                     </button>
@@ -215,13 +271,49 @@
 
         <!-- issues list -->
         <div class="animate-slide-up" style="animation-delay: 0.1s;">
-            <div class="glass-card rounded-2xl px-6 py-5 mb-6">
+            <div class="glass-card rounded-2xl px-6 py-5 mb-6 bg-white/90 dark:bg-gray-900/90 border border-gray-200 dark:border-gray-700 shadow-lg">
                 <!-- header -->
                 <div class="flex items-center justify-between mb-5">
-                    <h3 class="text-xl font-bold">All Issues</h3>
+                    <div class="flex items-center gap-4">
+                        <h3 class="text-xl font-bold text-gray-900 dark:text-white">All Issues</h3>
+                        <!-- Bulk Selection Toggle -->
+                        <button onclick="toggleBulkMode()" id="bulkModeBtn" class="text-sm px-3 py-1.5 rounded-lg bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors border border-gray-300 dark:border-gray-600">
+                            <i data-lucide="check-square" class="w-4 h-4 inline mr-1"></i>
+                            Select Multiple
+                        </button>
+                    </div>
                     <div class="flex items-center gap-2">
                         <div class="w-2 h-2 rounded-full bg-indigo-500 animate-pulse-soft"></div>
                         <span id="issueCount" class="text-sm font-medium text-gray-600 dark:text-gray-400">0 issues</span>
+                    </div>
+                </div>
+
+                <!-- Bulk Actions Bar (Hidden by default) -->
+                <div id="bulkActionsBar" class="hidden mb-4 p-4 bg-indigo-50 dark:bg-indigo-900/30 rounded-xl border border-indigo-200 dark:border-indigo-800">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-3">
+                            <input type="checkbox" id="selectAllCheckbox" onchange="toggleSelectAll()" class="w-5 h-5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500">
+                            <span class="text-sm font-medium text-gray-700 dark:text-gray-300">
+                                <span id="selectedCount">0</span> selected
+                            </span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <button onclick="bulkChangeStatus('resolved')" class="px-4 py-2 rounded-lg bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 text-sm font-medium hover:bg-emerald-200 dark:hover:bg-emerald-800 transition-colors flex items-center gap-2">
+                                <i data-lucide="check-circle" class="w-4 h-4"></i>
+                                Mark Resolved
+                            </button>
+                            <button onclick="bulkChangeStatus('in-progress')" class="px-4 py-2 rounded-lg bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 text-sm font-medium hover:bg-amber-200 dark:hover:bg-amber-800 transition-colors flex items-center gap-2">
+                                <i data-lucide="loader" class="w-4 h-4"></i>
+                                In Progress
+                            </button>
+                            <button onclick="bulkDelete()" class="px-4 py-2 rounded-lg bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400 text-sm font-medium hover:bg-red-200 dark:hover:bg-red-800 transition-colors flex items-center gap-2">
+                                <i data-lucide="trash-2" class="w-4 h-4"></i>
+                                Delete
+                            </button>
+                            <button onclick="toggleBulkMode()" class="px-4 py-2 rounded-lg bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 text-sm font-medium hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors">
+                                Cancel
+                            </button>
+                        </div>
                     </div>
                 </div>
 
@@ -229,13 +321,13 @@
                 <div class="border-t border-gray-200 dark:border-gray-700 pt-5">
                     <div class="flex items-center gap-2 mb-4">
                         <i data-lucide="filter" class="w-4 h-4 text-indigo-600 dark:text-indigo-400"></i>
-                        <span class="text-sm font-medium">Filters</span>
+                        <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Filters</span>
                     </div>
                     <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
                         <div>
                             <label for="filterPriority" class="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-2">Priority</label>
-                            <select id="filterPriority" onchange="applyFilters()" class="w-full px-3 py-2 rounded-lg bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-sm outline-none focus:border-indigo-500 transition-colors">
-                                <option value="">All</option>
+                            <select id="filterPriority" onchange="applyFilters()" class="w-full px-3 py-2 rounded-lg bg-gray-50 dark:bg-gray-800 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white text-sm outline-none focus:border-indigo-500 transition-colors">
+                                <option value="">All Priorities</option>
                                 <option value="low">Low</option>
                                 <option value="medium">Medium</option>
                                 <option value="high">High</option>
@@ -243,8 +335,8 @@
                         </div>
                         <div>
                             <label for="filterCategory" class="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-2">Category</label>
-                            <select id="filterCategory" onchange="applyFilters()" class="w-full px-3 py-2 rounded-lg bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-sm outline-none focus:border-indigo-500 transition-colors">
-                                <option value="">All</option>
+                            <select id="filterCategory" onchange="applyFilters()" class="w-full px-3 py-2 rounded-lg bg-gray-50 dark:bg-gray-800 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white text-sm outline-none focus:border-indigo-500 transition-colors">
+                                <option value="">All Categories</option>
                                 <option value="Bug">Bug</option>
                                 <option value="Feature Request">Feature Request</option>
                                 <option value="UI Issue">UI Issue</option>
@@ -253,8 +345,8 @@
                         </div>
                         <div>
                             <label for="filterStatus" class="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-2">Status</label>
-                            <select id="filterStatus" onchange="applyFilters()" class="w-full px-3 py-2 rounded-lg bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-sm outline-none focus:border-indigo-500 transition-colors">
-                                <option value="">All</option>
+                            <select id="filterStatus" onchange="applyFilters()" class="w-full px-3 py-2 rounded-lg bg-gray-50 dark:bg-gray-800 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white text-sm outline-none focus:border-indigo-500 transition-colors">
+                                <option value="">All Statuses</option>
                                 <option value="open">Open</option>
                                 <option value="in-progress">In Progress</option>
                                 <option value="resolved">Resolved</option>
@@ -270,13 +362,13 @@
             </div>
 
             <!-- empty state -->
-            <div id="emptyState" class="glass-card rounded-3xl p-12 text-center">
+            <div id="emptyState" class="glass-card rounded-3xl p-12 text-center bg-white/90 dark:bg-gray-900/90 border border-gray-200 dark:border-gray-700 shadow-lg">
                 <div class="w-16 h-16 mx-auto mb-4 rounded-full bg-gradient-to-br from-indigo-100 to-purple-100 dark:from-indigo-900/30 dark:to-purple-900/30 flex items-center justify-center">
                     <i data-lucide="inbox" class="w-8 h-8 text-indigo-600 dark:text-indigo-400"></i>
                 </div>
-                <h4 class="text-lg font-semibold mb-2">No issues yet</h4>
+                <h4 class="text-lg font-semibold mb-2 text-gray-900 dark:text-white">No issues yet</h4>
                 <p class="text-gray-600 dark:text-gray-400 mb-6">Get started by creating your first issue report</p>
-                <button onclick="toggleForm()" class="btn-primary px-6 py-3 rounded-xl text-white font-medium inline-flex items-center gap-2">
+                <button onclick="toggleForm()" class="btn-primary px-6 py-3 rounded-xl text-white font-medium inline-flex items-center gap-2 shadow-lg hover:shadow-xl transition-all">
                     <i data-lucide="plus" class="w-4 h-4"></i>
                     <span>Create Issue</span>
                 </button>

@@ -5,6 +5,10 @@ let expandedIssueId = null;
 let currentFileName = '';
 let currentFileData = '';
 
+// Bulk selection state
+let bulkMode = false;
+let selectedIssues = new Set();
+
 const STORAGE_KEY = 'bzz_issues';
 
 // initialize site
@@ -23,6 +27,231 @@ document.addEventListener('DOMContentLoaded', function() {
     // Initialize Lucide icons
     lucide.createIcons();
 });
+
+// ==================== BULK SELECTION FUNCTIONS ====================
+
+function toggleBulkMode() {
+    bulkMode = !bulkMode;
+    selectedIssues.clear();
+    
+    const bulkActionsBar = document.getElementById('bulkActionsBar');
+    const bulkModeBtn = document.getElementById('bulkModeBtn');
+    
+    if (bulkMode) {
+        bulkActionsBar.classList.remove('hidden');
+        bulkModeBtn.classList.add('bg-indigo-100', 'dark:bg-indigo-900/30', 'text-indigo-700', 'dark:text-indigo-400');
+    } else {
+        bulkActionsBar.classList.add('hidden');
+        bulkModeBtn.classList.remove('bg-indigo-100', 'dark:bg-indigo-900/30', 'text-indigo-700', 'dark:text-indigo-400');
+    }
+    
+    renderIssues();
+    updateSelectedCount();
+}
+
+function toggleIssueSelection(issueId) {
+    if (!bulkMode) return;
+    
+    if (selectedIssues.has(issueId)) {
+        selectedIssues.delete(issueId);
+    } else {
+        selectedIssues.add(issueId);
+    }
+    
+    updateSelectedCount();
+    renderIssues();
+}
+
+function toggleSelectAll() {
+    const filteredIssues = getFilteredIssues();
+    const allSelected = filteredIssues.every(issue => selectedIssues.has(issue.id));
+    
+    if (allSelected) {
+        // Deselect all
+        filteredIssues.forEach(issue => selectedIssues.delete(issue.id));
+    } else {
+        // Select all
+        filteredIssues.forEach(issue => selectedIssues.add(issue.id));
+    }
+    
+    updateSelectedCount();
+    renderIssues();
+}
+
+function updateSelectedCount() {
+    const count = selectedIssues.size;
+    document.getElementById('selectedCount').textContent = count;
+    
+    // Update select all checkbox
+    const selectAllCheckbox = document.getElementById('selectAllCheckbox');
+    const filteredIssues = getFilteredIssues();
+    if (filteredIssues.length > 0 && filteredIssues.every(issue => selectedIssues.has(issue.id))) {
+        selectAllCheckbox.checked = true;
+    } else {
+        selectAllCheckbox.checked = false;
+    }
+}
+
+function bulkChangeStatus(newStatus) {
+    if (selectedIssues.size === 0) {
+        alert('Please select at least one issue');
+        return;
+    }
+    
+    const action = newStatus === 'resolved' ? 'resolve' : 'update';
+    if (!confirm(`Are you sure you want to ${action} ${selectedIssues.size} issue(s)?`)) {
+        return;
+    }
+    
+    issues = issues.map(issue => {
+        if (selectedIssues.has(issue.id)) {
+            return { ...issue, status: newStatus };
+        }
+        return issue;
+    });
+    
+    saveIssues();
+    const count = selectedIssues.size;
+    selectedIssues.clear();
+    updateSelectedCount();
+    renderIssues();
+    updateStats();
+    
+    // Show success message
+    if (newStatus === 'resolved') {
+        triggerConfetti();
+        showToast(`🎉 ${count} issue(s) resolved!`, 'success');
+    } else {
+        showToast(`${count} issue(s) marked as ${newStatus.replace('-', ' ')}`, 'success');
+    }
+}
+
+function bulkDelete() {
+    if (selectedIssues.size === 0) {
+        alert('Please select at least one issue');
+        return;
+    }
+    
+    if (!confirm(`Are you sure you want to delete ${selectedIssues.size} issue(s)? This action cannot be undone.`)) {
+        return;
+    }
+    
+    issues = issues.filter(issue => !selectedIssues.has(issue.id));
+    
+    saveIssues();
+    const deletedCount = selectedIssues.size;
+    selectedIssues.clear();
+    updateSelectedCount();
+    renderIssues();
+    updateStats();
+    
+    showToast(`${deletedCount} issue(s) deleted successfully`, 'success');
+}
+
+function getFilteredIssues() {
+    return issues.filter(issue => {
+        if (currentFilter.priority && issue.priority !== currentFilter.priority) return false;
+        if (currentFilter.category && issue.category !== currentFilter.category) return false;
+        if (currentFilter.status && issue.status !== currentFilter.status) return false;
+        return true;
+    });
+}
+
+// ==================== DATA VISUALIZATION ====================
+
+function updateStats() {
+    const total = issues.length;
+    const open = issues.filter(i => i.status === 'open').length;
+    const inProgress = issues.filter(i => i.status === 'in-progress').length;
+    const resolved = issues.filter(i => i.status === 'resolved').length;
+    
+    // Update stat boxes with animation
+    animateValue('statTotal', parseInt(document.getElementById('statTotal').textContent) || 0, total, 500);
+    animateValue('statOpen', parseInt(document.getElementById('statOpen').textContent) || 0, open, 500);
+    animateValue('statInProgress', parseInt(document.getElementById('statInProgress').textContent) || 0, inProgress, 500);
+    animateValue('statResolved', parseInt(document.getElementById('statResolved').textContent) || 0, resolved, 500);
+}
+
+function animateValue(elementId, start, end, duration) {
+    const element = document.getElementById(elementId);
+    if (!element) return;
+    
+    const range = end - start;
+    const increment = range / (duration / 16);
+    let current = start;
+    
+    const timer = setInterval(() => {
+        current += increment;
+        if ((increment > 0 && current >= end) || (increment < 0 && current <= end)) {
+            element.textContent = end;
+            clearInterval(timer);
+        } else {
+            element.textContent = Math.round(current);
+        }
+    }, 16);
+}
+
+// ==================== TOAST NOTIFICATIONS ====================
+
+function showToast(message, type = 'info') {
+    // Remove existing toasts
+    const existingToast = document.querySelector('.toast-notification');
+    if (existingToast) {
+        existingToast.remove();
+    }
+    
+    const toast = document.createElement('div');
+    toast.className = `toast-notification fixed bottom-4 right-4 px-6 py-3 rounded-xl shadow-lg z-50 animate-slide-up flex items-center gap-3 ${
+        type === 'success' ? 'bg-emerald-500 text-white' :
+        type === 'error' ? 'bg-red-500 text-white' :
+        'bg-indigo-500 text-white'
+    }`;
+    
+    const icon = type === 'success' ? 'check-circle' : type === 'error' ? 'x-circle' : 'info';
+    
+    toast.innerHTML = `
+        <i data-lucide="${icon}" class="w-5 h-5"></i>
+        <span class="font-medium">${message}</span>
+    `;
+    
+    document.body.appendChild(toast);
+    lucide.createIcons();
+    
+    // Remove after 3 seconds
+    setTimeout(() => {
+        toast.style.opacity = '0';
+        toast.style.transform = 'translateY(10px)';
+        toast.style.transition = 'all 0.3s ease';
+        setTimeout(() => toast.remove(), 300);
+    }, 3000);
+}
+
+// ==================== EXPORT FUNCTION ====================
+
+function exportIssues() {
+    if (issues.length === 0) {
+        showToast('No issues to export', 'error');
+        return;
+    }
+    
+    const data = {
+        exportDate: new Date().toISOString(),
+        totalIssues: issues.length,
+        issues: issues
+    };
+    
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `bzz-issues-${new Date().toISOString().split('T')[0]}.json`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    
+    showToast(`Exported ${issues.length} issue(s) successfully`, 'success');
+}
 
 // Dark Mode Toggle
 function toggleDarkMode() {
@@ -130,6 +359,7 @@ function handleSubmit(event) {
     renderIssues();
     toggleForm();
     
+    showToast('Issue created successfully!', 'success');
     console.log('Issue created:', issue);
 }
 
@@ -195,12 +425,7 @@ function renderIssues() {
     const emptyState = document.getElementById('emptyState');
     
     // Filter issues
-    let filteredIssues = issues.filter(issue => {
-        if (currentFilter.priority && issue.priority !== currentFilter.priority) return false;
-        if (currentFilter.category && issue.category !== currentFilter.category) return false;
-        if (currentFilter.status && issue.status !== currentFilter.status) return false;
-        return true;
-    });
+    let filteredIssues = getFilteredIssues();
     
     issueCount.textContent = `${filteredIssues.length} issue${filteredIssues.length !== 1 ? 's' : ''}`;
     
@@ -211,6 +436,9 @@ function renderIssues() {
         emptyState.classList.add('hidden');
         issuesList.innerHTML = filteredIssues.map(issue => createIssueCard(issue)).join('');
     }
+    
+    // Update stats whenever issues are rendered
+    updateStats();
     
     lucide.createIcons();
 }
@@ -259,43 +487,57 @@ function createIssueCard(issue) {
         `;
     }
     
+    const isSelected = selectedIssues.has(issue.id);
+    const checkboxHtml = bulkMode ? `
+        <div class="mr-3 pt-1">
+            <input type="checkbox" 
+                   ${isSelected ? 'checked' : ''} 
+                   onchange="toggleIssueSelection('${issue.id}')"
+                   class="w-5 h-5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500 cursor-pointer"
+                   onclick="event.stopPropagation()">
+        </div>
+    ` : '';
+    
     return `
-        <div class="glass-card rounded-2xl p-6 issue-card priority-${issue.priority} ${isExpanded ? 'expanded' : ''}">
-            <div class="flex items-start justify-between mb-4">
-                <div class="flex-1">
-                    <div class="flex items-center gap-3 mb-2 flex-wrap">
-                        <span class="status-${issue.status} px-3 py-1 rounded-lg text-xs font-medium">
-                            ${issue.status.replace('-', ' ').toUpperCase()}
-                        </span>
-                        <span class="text-xs text-gray-500 dark:text-gray-500">${issue.category}</span>
-                    </div>
-                    <h4 class="text-lg font-semibold mb-2">${escapeHtml(issue.title)}</h4>
-                    <p class="text-sm text-gray-600 dark:text-gray-400 mb-3">${escapeHtml(issue.description)}</p>
-                    <div class="flex items-center gap-4 text-xs text-gray-500 flex-wrap">
-                        <div class="flex items-center gap-1">
-                            <i data-lucide="calendar" class="w-3 h-3"></i>
-                            <span>${date}</span>
+        <div class="glass-card rounded-2xl p-6 issue-card priority-${issue.priority} ${isExpanded ? 'expanded' : ''} bg-white/90 dark:bg-gray-900/90 border border-gray-200 dark:border-gray-700 shadow-md hover:shadow-lg transition-all" onclick="${bulkMode ? '' : `toggleIssueExpanded('${issue.id}')`}">
+            <div class="flex items-start justify-between">
+                <div class="flex-1 flex">
+                    ${checkboxHtml}
+                    <div class="flex-1">
+                        <div class="flex items-center gap-3 mb-2 flex-wrap">
+                            <span class="status-${issue.status} px-3 py-1 rounded-lg text-xs font-medium">
+                                ${issue.status.replace('-', ' ').toUpperCase()}
+                            </span>
+                            <span class="text-xs text-gray-500 dark:text-gray-500">${issue.category}</span>
                         </div>
-                        ${issue.fileName ? `
-                        <div class="flex items-center gap-1 cursor-pointer hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors" onclick="viewFilePreview('${issue.id}', '${escapeHtml(issue.fileName)}')">
-                            <i data-lucide="paperclip" class="w-3 h-3"></i>
-                            <span>${escapeHtml(issue.fileName)}</span>
+                        <h4 class="text-lg font-semibold text-gray-900 dark:text-white">${escapeHtml(issue.title)}</h4>
+                        <p class="text-sm text-gray-600 dark:text-gray-400 mt-2">${escapeHtml(issue.description)}</p>
+                        <div class="flex items-center gap-4 text-xs text-gray-500 mt-3">
+                            <div class="flex items-center gap-1">
+                                <i data-lucide="calendar" class="w-3 h-3"></i>
+                                <span>${date}</span>
+                            </div>
+                            ${issue.fileName ? `
+                            <div class="flex items-center gap-1 cursor-pointer hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors" onclick="event.stopPropagation(); viewFilePreview('${issue.id}', '${escapeHtml(issue.fileName)}')">
+                                <i data-lucide="paperclip" class="w-3 h-3"></i>
+                                <span>${escapeHtml(issue.fileName)}</span>
+                            </div>
+                            ` : ''}
                         </div>
-                        ` : ''}
                     </div>
                 </div>
-                <div class="flex gap-2 flex-wrap">
-                    <select class="status-dropdown" onchange="changeStatus('${issue.id}', this.value)">
+                <div class="flex gap-2 flex-wrap ml-4" onclick="event.stopPropagation()">
+                    <select class="status-dropdown bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white" onchange="changeStatus('${issue.id}', this.value)">
                         <option value="open" ${issue.status === 'open' ? 'selected' : ''}>Open</option>
                         <option value="in-progress" ${issue.status === 'in-progress' ? 'selected' : ''}>In Progress</option>
                         <option value="resolved" ${issue.status === 'resolved' ? 'selected' : ''}>Resolved</option>
                     </select>
-                    <button onclick="toggleIssueExpanded('${issue.id}')" class="btn-toggle-comments">
-                        <i data-lucide="message-circle" class="w-3 h-3 inline"></i>
-                        ${comments.length} ${isExpanded ? 'Close' : 'Comments'}
+                    <button onclick="event.stopPropagation(); toggleIssueExpanded('${issue.id}')" class="btn-toggle-comments">
+                        <i data-lucide="message-circle" class="w-3 h-3 inline mr-1"></i>
+                        ${comments.length}
                     </button>
-                    <button onclick="deleteIssue('${issue.id}')" class="btn-delete-issue">
-                        <i data-lucide="trash-2" class="w-3 h-3"></i>
+                    <button onclick="event.stopPropagation(); deleteIssue('${issue.id}')" class="btn-delete-issue">
+                        <i data-lucide="trash-2" class="w-3 h-3 mr-1"></i>
                         Delete
                     </button>
                 </div>
@@ -388,11 +630,86 @@ function escapeHtml(text) {
 
 // Change Issue Status
 function changeStatus(id, newStatus) {
+    const issue = issues.find(i => i.id === id);
+    const wasResolved = newStatus === 'resolved' && issue && issue.status !== 'resolved';
+    
     issues = issues.map(issue => 
         issue.id === id ? { ...issue, status: newStatus } : issue
     );
     saveIssues();
     renderIssues();
+    
+    if (wasResolved) {
+        triggerConfetti();
+        showToast('🎉 Issue resolved! Great job!', 'success');
+    } else {
+        showToast(`Issue status changed to ${newStatus.replace('-', ' ')}`, 'success');
+    }
+}
+
+// Confetti Effect
+function triggerConfetti() {
+    const canvas = document.createElement('canvas');
+    canvas.id = 'confetti-canvas';
+    canvas.style.position = 'fixed';
+    canvas.style.top = '0';
+    canvas.style.left = '0';
+    canvas.style.width = '100%';
+    canvas.style.height = '100%';
+    canvas.style.pointerEvents = 'none';
+    canvas.style.zIndex = '9999';
+    document.body.appendChild(canvas);
+    
+    const ctx = canvas.getContext('2d');
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    
+    const colors = ['#6366f1', '#a855f7', '#ec4899', '#10b981', '#f59e0b', '#ef4444'];
+    const particles = [];
+    
+    for (let i = 0; i < 150; i++) {
+        particles.push({
+            x: Math.random() * canvas.width,
+            y: Math.random() * canvas.height - canvas.height,
+            size: Math.random() * 8 + 4,
+            color: colors[Math.floor(Math.random() * colors.length)],
+            speedY: Math.random() * 3 + 2,
+            speedX: Math.random() * 2 - 1,
+            rotation: Math.random() * 360,
+            rotationSpeed: Math.random() * 10 - 5
+        });
+    }
+    
+    let animationFrame;
+    function animate() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        let activeParticles = 0;
+        
+        particles.forEach(p => {
+            if (p.y < canvas.height + 20) {
+                activeParticles++;
+                p.y += p.speedY;
+                p.x += p.speedX;
+                p.rotation += p.rotationSpeed;
+                
+                ctx.save();
+                ctx.translate(p.x, p.y);
+                ctx.rotate((p.rotation * Math.PI) / 180);
+                ctx.fillStyle = p.color;
+                ctx.fillRect(-p.size / 2, -p.size / 2, p.size, p.size);
+                ctx.restore();
+            }
+        });
+        
+        if (activeParticles > 0) {
+            animationFrame = requestAnimationFrame(animate);
+        } else {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            canvas.remove();
+        }
+    }
+    
+    animate();
 }
 
 // Delete Issue
@@ -404,6 +721,7 @@ function deleteIssue(id) {
         }
         saveIssues();
         renderIssues();
+        showToast('Issue deleted successfully', 'success');
     }
 }
 

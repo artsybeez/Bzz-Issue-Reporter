@@ -112,7 +112,7 @@
         .dark .blob { opacity: 0.15; }
     </style>
 </head>
-<body class="min-h-screen bg-gray-50 text-gray-900 dark:bg-gray-950 dark:text-gray-100 transition-colors duration-300">
+<body class="min-h-screen bg-white text-gray-900 dark:bg-gray-950 dark:text-gray-100 transition-colors duration-300">
     <!-- ambient bg -->
     <div class="blob blob-1"></div>
     <div class="blob blob-2"></div>
@@ -121,22 +121,22 @@
     <!-- header -->
     <header class="sticky top-0 z-50">
         <div class="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
-            <div class="mt-4 glass-card rounded-2xl px-6 py-4 animate-fade-in">
+            <div class="mt-4 glass-card rounded-2xl px-6 py-4 animate-fade-in bg-white/80 dark:bg-gray-900/80 shadow-lg border border-gray-200 dark:border-gray-800">
                 <div class="flex items-center justify-between">
                     <div class="flex items-center gap-4">
                         <div class="relative group">
                             <div class="absolute inset-0 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-xl blur opacity-40 group-hover:opacity-60 transition-opacity"></div>
                             <img src="https://png.pngtree.com/png-clipart/20250307/original/pngtree-dog-wearing-glasses-and-looking-smart-png-image_20595001.png" 
                                  alt="Bleta's Logo" 
-                                 class="relative w-10 h-10 rounded-xl object-cover border-2 border-white/20">
+                                 class="relative w-10 h-10 rounded-xl object-cover border-2 border-white/20 shadow-md">
                         </div>
-                        <h1 class="text-lg font-semibold tracking-tight">
+                        <h1 class="text-lg font-semibold tracking-tight text-gray-800 dark:text-gray-100">
                             <span class="hidden sm:inline">Bleta's Issue Reporter</span>
                             <span class="sm:hidden">Issue Reporter</span>
                         </h1>
                     </div>
                     <button onclick="toggleDarkMode()" 
-                            class="p-2.5 rounded-xl bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition-all duration-200 group"
+                            class="p-2.5 rounded-xl bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition-all duration-200 group border border-gray-300 dark:border-gray-600"
                             aria-label="Toggle dark mode">
                         <i data-lucide="moon" class="w-5 h-5 hidden dark:block text-amber-400"></i>
                         <i data-lucide="sun" class="w-5 h-5 block dark:hidden text-orange-500"></i>
@@ -151,7 +151,7 @@
         <!-- hero -->
         <div class="text-center mb-12 animate-slide-up">
             <p class="text-sm font-medium text-indigo-600 dark:text-indigo-400 uppercase tracking-wider mb-3">Welcome</p>
-            <h2 class="text-4xl sm:text-5xl font-bold tracking-tight mb-4">
+            <h2 class="text-4xl sm:text-5xl font-bold tracking-tight mb-4 text-gray-900 dark:text-white">
                 Report issues <span class="gradient-text">effortlessly</span>
             </h2>
             <p class="text-lg text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
@@ -160,10 +160,10 @@
         </div>
 
         <!-- main card -->
-        <div class="glass-card rounded-3xl p-8 sm:p-10 animate-slide-up" style="animation-delay: 0.1s;">
+        <div class="glass-card rounded-3xl p-8 sm:p-10 animate-slide-up bg-white/90 dark:bg-gray-900/90 border border-gray-200 dark:border-gray-700 shadow-xl" style="animation-delay: 0.1s;">
             <!-- about section -->
             <div class="mb-10">
-                <h3 class="text-2xl font-bold mb-3">About this tool</h3>
+                <h3 class="text-2xl font-bold mb-3 text-gray-900 dark:text-white">About this tool</h3>
                 <p class="text-gray-600 dark:text-gray-400 leading-relaxed">
                     Bleta's issue tracker is designed to help you document bugs, device problems, UI inconsistencies, 
                     feature requests and any other related issue. All of this in one organized place. I created this for DevLeague.
@@ -172,43 +172,43 @@
 
             <!-- grid of features -->
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-10">
-                <div class="feature-card bg-gray-100/50 dark:bg-white/5 rounded-2xl p-5 border border-gray-200/50 dark:border-white/10">
+                <div class="feature-card bg-gray-50 dark:bg-gray-800 rounded-2xl p-5 border border-gray-200 dark:border-gray-700 hover:border-indigo-300 dark:hover:border-indigo-700 transition-all">
                     <div class="w-10 h-10 rounded-xl bg-indigo-100 dark:bg-indigo-900/30 flex items-center justify-center mb-4">
                         <i data-lucide="file-plus" class="w-5 h-5 text-indigo-600 dark:text-indigo-400"></i>
                     </div>
-                    <h4 class="font-semibold mb-2">Submit Issues</h4>
+                    <h4 class="font-semibold mb-2 text-gray-900 dark:text-white">Submit Issues</h4>
                     <p class="text-sm text-gray-600 dark:text-gray-400">Create detailed reports with titles, descriptions, categories, and file attachments.</p>
                 </div>
 
-                <div class="feature-card bg-gray-100/50 dark:bg-white/5 rounded-2xl p-5 border border-gray-200/50 dark:border-white/10">
+                <div class="feature-card bg-gray-50 dark:bg-gray-800 rounded-2xl p-5 border border-gray-200 dark:border-gray-700 hover:border-purple-300 dark:hover:border-purple-700 transition-all">
                     <div class="w-10 h-10 rounded-xl bg-purple-100 dark:bg-purple-900/30 flex items-center justify-center mb-4">
                         <i data-lucide="flag" class="w-5 h-5 text-purple-600 dark:text-purple-400"></i>
                     </div>
-                    <h4 class="font-semibold mb-2">Set Priority</h4>
+                    <h4 class="font-semibold mb-2 text-gray-900 dark:text-white">Set Priority</h4>
                     <p class="text-sm text-gray-600 dark:text-gray-400">Mark issues as low, medium, or high priority to manage your workflow.</p>
                 </div>
 
-                <div class="feature-card bg-gray-100/50 dark:bg-white/5 rounded-2xl p-5 border border-gray-200/50 dark:border-white/10">
+                <div class="feature-card bg-gray-50 dark:bg-gray-800 rounded-2xl p-5 border border-gray-200 dark:border-gray-700 hover:border-pink-300 dark:hover:border-pink-700 transition-all">
                     <div class="w-10 h-10 rounded-xl bg-pink-100 dark:bg-pink-900/30 flex items-center justify-center mb-4">
                         <i data-lucide="filter" class="w-5 h-5 text-pink-600 dark:text-pink-400"></i>
                     </div>
-                    <h4 class="font-semibold mb-2">Filter & Browse</h4>
+                    <h4 class="font-semibold mb-2 text-gray-900 dark:text-white">Filter & Browse</h4>
                     <p class="text-sm text-gray-600 dark:text-gray-400">Quickly find issues by priority, category, and status with smart filtering.</p>
                 </div>
 
-                <div class="feature-card bg-gray-100/50 dark:bg-white/5 rounded-2xl p-5 border border-gray-200/50 dark:border-white/10">
+                <div class="feature-card bg-gray-50 dark:bg-gray-800 rounded-2xl p-5 border border-gray-200 dark:border-gray-700 hover:border-amber-300 dark:hover:border-amber-700 transition-all">
                     <div class="w-10 h-10 rounded-xl bg-amber-100 dark:bg-amber-900/30 flex items-center justify-center mb-4">
                         <i data-lucide="sparkles" class="w-5 h-5 text-amber-600 dark:text-amber-400"></i>
                     </div>
-                    <h4 class="font-semibold mb-2">Dark Mode</h4>
+                    <h4 class="font-semibold mb-2 text-gray-900 dark:text-white">Dark Mode</h4>
                     <p class="text-sm text-gray-600 dark:text-gray-400">Seamlessly switch between light and dark themes for comfortable viewing.</p>
                 </div>
             </div>
 
             <!-- continue to main page -->
-            <div class="flex flex-col sm:flex-row items-center gap-4 pt-6 border-t border-gray-200 dark:border-white/10">
+            <div class="flex flex-col sm:flex-row items-center gap-4 pt-6 border-t border-gray-200 dark:border-gray-700">
                 <button onclick="continueToApp()" 
-                        class="btn-primary w-full sm:w-auto px-8 py-4 rounded-xl text-white font-semibold flex items-center justify-center gap-3 group">
+                        class="btn-primary w-full sm:w-auto px-8 py-4 rounded-xl text-white font-semibold flex items-center justify-center gap-3 group shadow-lg hover:shadow-xl transition-all">
                     <span>Continue to Issue Reporter</span>
                     <i data-lucide="arrow-right" class="w-5 h-5 group-hover:translate-x-1 transition-transform"></i>
                 </button>
